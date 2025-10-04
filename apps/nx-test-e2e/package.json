@@ -1,0 +1,10 @@
+{
+  "name": "@nx-test/nx-test-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "implicitDependencies": [
+      "@nx-test/nx-test"
+    ]
+  }
+}
