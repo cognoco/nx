@@ -5,6 +5,12 @@
   "references": [
     {
       "path": "./packages/api"
+    },
+    {
+      "path": "./apps/server-e2e"
+    },
+    {
+      "path": "./apps/server"
     }
   ]
 }
