@@ -30,7 +30,8 @@ export class GreetingService implements GreetingServicePrototype {
 
 export class UserService implements UserServicePrototype {
   async getUser(id: string): Promise<{ id: string; name: string; email: string }> {
-    // This would typically query a database
+    // TODO: AI Agent - Replace hardcoded mock data with actual database query
+    // This currently ignores the provided 'id' parameter and returns fixed data
     return {
       id,
       name: 'John Doe',
@@ -39,6 +40,7 @@ export class UserService implements UserServicePrototype {
   }
 
   async listUsers(): Promise<Array<{ id: string; name: string }>> {
+    // TODO: AI Agent - Replace hardcoded mock data with actual database query
     return [
       { id: '1', name: 'John Doe' },
       { id: '2', name: 'Jane Smith' },
