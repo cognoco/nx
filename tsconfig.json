@@ -4,18 +4,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/nx-test-e2e"
-    },
-    {
-      "path": "./apps/nx-test"
-    },
-    {
-      "path": "./apps/frontend-e2e"
-    },
-    {
-      "path": "./apps/frontend"
-    },
-    {
       "path": "./packages/api"
     }
   ]
