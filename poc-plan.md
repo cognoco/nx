@@ -93,10 +93,12 @@ npx nx g @nx/js:lib schemas --directory=packages/schemas --buildable
 
 # API client library (buildable)
 npx nx g @nx/node:lib api-client --directory=packages/api-client --buildable
+
+# Supabase client library (buildable, shared configuration)
+npx nx g @nx/js:lib supabase-client --directory=packages/supabase-client --buildable
 ```
 
 **Note**: Nx may encourage MORE granular libraries than Turborepo. Consider adding:
-- `packages/supabase-client` - Shared Supabase client configuration
 - `packages/ui` - Shared UI components (if needed)
 - Feature-specific libraries as needed
 
@@ -135,6 +137,11 @@ Minimal setup to prove structure works:
 - `src/index.ts` - Placeholder oRPC client factory
 - `src/types.ts` - Shared TypeScript types
 
+**Supabase Client Package** (`packages/supabase-client`):
+- `src/index.ts` - Supabase client factory function
+- `src/types/database.types.ts` - Generated Supabase database types (placeholder)
+- `src/utils.ts` - Shared Supabase utilities
+
 **Server App** (`apps/server`):
 - `src/main.ts` - Placeholder Express + oRPC server setup
 - `src/routes/` - Placeholder route structure
@@ -142,13 +149,13 @@ Minimal setup to prove structure works:
 **Web App** (`apps/web`):
 - `src/app/page.tsx` - Placeholder homepage
 - `src/app/todos/page.tsx` - Placeholder todos page
-- `src/lib/supabase.ts` - Supabase client configuration
+- `src/lib/supabase.ts` - Supabase client initialization using `@nx-test/supabase-client` factory
 
 **Mobile App** (`apps/mobile`):
 - `app/_layout.tsx` - Expo Router root layout
 - `app/index.tsx` - Placeholder home screen
 - `app/todos.tsx` - Placeholder todos screen
-- `lib/supabase.ts` - Supabase client configuration for React Native
+- `lib/supabase.ts` - Supabase client initialization using `@nx-test/supabase-client` factory with AsyncStorage
 
 **Manual checkpoint**: `pnpm dev` starts all apps (even if they don't do anything yet)
 
@@ -164,25 +171,31 @@ Build functionality incrementally using vertical slices.
 
 #### Tasks
 1. Set up Supabase project and get connection string
-2. Complete Prisma schema in `packages/database/prisma/schema.prisma`:
+2. Complete Supabase client factory in `packages/supabase-client/src/index.ts`:
+   - Export `createSupabaseClient(config)` factory function
+   - Export database types (placeholder initially, generated from Supabase later)
+   - Export shared utilities (e.g., `getSupabaseUrl()`)
+3. Complete Prisma schema in `packages/database/prisma/schema.prisma`:
    - Todo model (id, text, completed, userId, createdAt, updatedAt)
    - Use Supabase's built-in auth.users table for user references
-3. Configure Prisma client export in `packages/database/src/index.ts`
-4. Create initial migration and push to Supabase
-5. Complete Zod schemas in `packages/schemas/src/todo.ts`:
+4. Configure Prisma client export in `packages/database/src/index.ts`
+5. Create initial migration and push to Supabase
+6. Complete Zod schemas in `packages/schemas/src/todo.ts`:
    - `todoCreateSchema` - For creating todos
    - `todoUpdateSchema` - For updating todos
    - `todoDeleteSchema` - For deleting todos
-6. Add unit tests for schema validation
-7. Configure Nx dependency graph
+7. Add unit tests for schema validation
+8. Configure Nx dependency graph
 
 #### Manual Checkpoints
+- [ ] `pnpm --filter @nx-test/supabase-client build` succeeds
 - [ ] `pnpm --filter @nx-test/database db:push` works
 - [ ] Supabase dashboard shows `Todo` table
 - [ ] `pnpm --filter @nx-test/schemas test` passes
-- [ ] `npx nx graph` shows correct dependencies
+- [ ] `npx nx graph` shows correct dependencies including supabase-client
 
 #### Completion Criteria
+- Supabase client factory can be imported from `@nx-test/supabase-client`
 - Prisma client can be imported from `@nx-test/database`
 - Zod schemas can be imported from `@nx-test/schemas`
 - All tests pass
@@ -249,7 +262,7 @@ Build functionality incrementally using vertical slices.
 **Goal**: User-facing web application works.
 
 #### Tasks
-1. Set up Supabase client in `apps/web/src/lib/supabase.ts`
+1. Set up Supabase client in `apps/web/src/lib/supabase.ts` using `@nx-test/supabase-client` factory
 2. Create API client instance in `apps/web/src/lib/api.ts` using `@nx-test/api-client`
 3. Implement todo UI in `apps/web/src/app/todos/page.tsx`:
    - Display list of todos
@@ -289,7 +302,7 @@ Build functionality incrementally using vertical slices.
 **Goal**: Prove cross-platform works with Expo Router.
 
 #### Tasks
-1. Set up Supabase client for React Native in `apps/mobile/lib/supabase.ts`
+1. Set up Supabase client for React Native in `apps/mobile/lib/supabase.ts` using `@nx-test/supabase-client` factory with AsyncStorage
 2. Create API client instance in `apps/mobile/lib/api.ts` using `@nx-test/api-client`
 3. Configure Expo Router layout in `apps/mobile/app/_layout.tsx`:
    - Set up navigation structure
