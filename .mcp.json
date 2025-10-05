@@ -1,12 +1,21 @@
 {
   "mcpServers": {
-    "nx-mcp": {
-      "type": "stdio",
+    "context7": {
       "command": "npx",
       "args": [
-        "nx",
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "type": "stdio"
+    },
+    "prisma": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "prisma",
         "mcp"
-      ]
+      ],
+      "type": "stdio"
     }
   }
 }
