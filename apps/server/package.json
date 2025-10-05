@@ -103,6 +103,7 @@
     }
   },
   "dependencies": {
+    "@orpc/server": "^1.9.3",
     "express": "^4.21.2"
   }
 }

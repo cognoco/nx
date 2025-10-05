@@ -106,19 +106,47 @@ npx nx g @nx/js:lib supabase-client --directory=packages/supabase-client --build
 
 ### Step 1.3: Configure Tooling (Nx Defaults + Supabase)
 
-**Keep Nx defaults**:
-- ESLint setup (Nx way, not Ultracite)
-- Jest configuration
-- Build caching
-- Playwright for E2E
+**Keep Nx defaults** (already configured):
+- ✅ ESLint setup (Nx way)
+- ✅ Jest configuration
+- ✅ Build caching
+- ✅ Playwright for E2E
 
-**Add project-specific tooling**:
-- Prisma to `packages/database` (configured for Supabase)
-- Supabase CLI and client libraries
-- oRPC to `apps/server`
-- Expo Router to `apps/mobile`
+**Install project-specific tooling**:
 
-**Manual checkpoint**: `pnpm lint:check` and `pnpm test` pass (even with empty implementations)
+```bash
+# Install Prisma for database package
+pnpm add -D prisma --filter @nx-test/database
+pnpm add @prisma/client --filter @nx-test/database
+
+# Supabase CLI - use npx (no installation needed)
+# Note: Supabase CLI cannot be installed via npm
+# Use npx for all Supabase CLI commands: npx supabase <command>
+
+# Login to Supabase (using access token method)
+# 1. Go to https://supabase.com/dashboard/account/tokens
+# 2. Create a new access token
+# 3. Login: npx supabase login --token <your-access-token>
+
+# Initialize Supabase in the project
+npx supabase init
+# When prompted to generate settings for Deno answer: N
+
+# Install Supabase client libraries
+pnpm add @supabase/supabase-js --filter @nx-test/supabase-client
+pnpm add @supabase/ssr --filter @nx-test/supabase-client
+
+# Install oRPC for server
+pnpm add @orpc/server --filter @nx-test/server
+pnpm add @orpc/client --filter @nx-test/api-client
+
+# Note: Expo Router skipped (no mobile app in Phase 1)
+```
+
+**Manual checkpoint**:
+- [ ] `pnpm install` completes successfully
+- [ ] `npx nx run-many -t lint test` passes (even with empty implementations)
+- [ ] All packages build successfully: `npx nx run-many -t build`
 
 ### Step 1.4: Add Placeholder Files
 
