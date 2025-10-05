@@ -50,8 +50,9 @@ export const listUsers = os
     })
   )
   .output(z.array(UserSummarySchema))
-  .handler(async ({ input }) => {
+  .handler(async () => {
     // TODO: AI Agent - Replace hardcoded mock data with actual database query
+    // TODO: AI Agent - Use input.limit and input.cursor for pagination
     return [
       { id: '1', name: 'John Doe' },
       { id: '2', name: 'Jane Smith' },

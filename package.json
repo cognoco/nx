@@ -6,7 +6,7 @@
   "private": true,
   "dependencies": {
     "next": "~15.2.5",
-    "orpc": "^0.1.1",
+    "@orpc/server": "^1.9.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "zod": "^4.1.11"
