@@ -1,5 +1,5 @@
-/* eslint-disable */
-import { readFileSync } from 'fs';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { readFileSync } = require('fs');
 
 // Reading the SWC compilation config for the spec files
 const swcJestConfig = JSON.parse(
@@ -9,7 +9,7 @@ const swcJestConfig = JSON.parse(
 // Disable .swcrc look-up by SWC core because we're passing in swcJestConfig ourselves
 swcJestConfig.swcrc = false;
 
-export default {
+module.exports = {
   displayName: '@nx-test/api',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
@@ -17,5 +17,5 @@ export default {
     '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: 'test-output/jest/coverage',
+  coverageDirectory: '../../coverage/packages/api',
 };
