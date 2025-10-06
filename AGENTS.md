@@ -3,9 +3,69 @@
 
 <!-- Source: .ruler/AGENTS.md -->
 
-# CLAUDE.md
+# Agent Guidance
 
 This file provides guidance to agents when working with code in this repository.
+
+# Sub-Agent Usage Policy
+**Applies ONLY to agents capable of sub-agent use**, eg. **Claude Code**!
+
+**IMPORTANT:** You MUST proactively use sub-agents to preserve context and accelerate execution. Sub-agents are your primary tool for delegatable work.
+
+## Mandatory Sub-Agent Usage
+
+Launch sub-agents for ANY of the following tasks:
+
+### 1. Codebase Research & Analysis
+
+- Searching for files, functions, classes, or patterns      
+- Understanding unfamiliar code structure or architecture
+- Finding all usages or references to a symbol
+- Analyzing dependencies or imports across multiple files
+- Reading and summarizing large files (>200 lines)
+
+### 2. External Research
+
+- Fetching documentation (web searches, Context7, library docs)
+- Researching solutions to errors or problems
+- Gathering information about tools, frameworks, or best practices
+- Comparing multiple approaches or solutions
+
+### 3. Parallel Task Execution
+
+- Multiple independent investigations
+- Testing different hypotheses simultaneously
+- Gathering information from multiple sources
+concurrently
+
+### 4. Deep Troubleshooting
+
+- Root cause analysis requiring multiple investigation paths
+- Systematic exploration of 3+ potential causes
+- Building comprehensive understanding before taking action
+
+## Implementation Rules
+
+1. **Default to delegation**: When deciding between doing research yourself vs. using a sub-agent, ALWAYS choose the sub-agent
+2. **Parallel execution**: Launch multiple sub-agents in a single message whenever tasks are independent
+3. **Context preservation**: Reserve your context window for synthesis, decision-making, and implementation
+4. **Explicit over implicit**: Even "simple" searches should use sub-agents if they might require iteration
+
+## Examples
+
+✅ **DO**: Launch sub-agent to find all files importing a specific module
+✅ **DO**: Use parallel sub-agents to research 4 potential root causes
+✅ **DO**: Delegate web documentation fetching while you plan implementation
+✅ **DO**: Have sub-agent read and summarize large configuration files
+
+❌ **DON'T**: Manually use Grep/Glob for exploratory searches that might need refinement
+❌ **DON'T**: Read multiple files yourself when a sub-agent could analyze them
+❌ **DON'T**: Sequentially search for information that could be gathered in parallel
+❌ **DON'T**: Consume your context with research when implementation work is pending
+
+## Efficiency Guideline
+
+Before using Grep, Glob, Read, or WebSearch yourself, ask: "Could a sub-agent do this while I focus on higher-level work?" If yes, use a sub-agent.
 
 # Project Structure
 

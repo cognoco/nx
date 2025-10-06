@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit:*)",
+      "mcp__sequential-thinking-mcp__sequentialthinking"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
