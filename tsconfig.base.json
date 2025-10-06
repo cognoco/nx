@@ -16,6 +16,14 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@nx-test/source"]
+    "customConditions": ["@nx-test/source"],
+    "paths": {
+      "@nx-test/database": [
+        "packages/database/src/index.ts"
+      ],
+      "@nx-test/schemas": [
+        "packages/schemas/src/index.ts"
+      ]
+    }
   }
 }

@@ -1,0 +1,26 @@
+// This is your Prisma schema file for Supabase PostgreSQL database.
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Todo model for task management
+model Todo {
+  id        String   @id @default(uuid())
+  text      String
+  completed Boolean  @default(false)
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Reference to Supabase auth.users table
+  // Note: This is a soft reference since auth.users is in a different schema
+  @@map("todos")
+  @@index([userId])
+}

@@ -4,6 +4,12 @@
   "include": [],
   "references": [
     {
+      "path": "../../packages/schemas"
+    },
+    {
+      "path": "../../packages/database"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {
