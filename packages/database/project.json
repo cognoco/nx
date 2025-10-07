@@ -1,0 +1,29 @@
+{
+  "name": "@nx-test/database",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/database/src",
+  "projectType": "library",
+  "targets": {
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma generate --schema=./prisma/schema.prisma",
+        "cwd": "packages/database"
+      },
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/prisma/schema.prisma",
+        {
+          "externalDependencies": ["prisma"]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/node_modules/.prisma/client",
+        "{workspaceRoot}/node_modules/@prisma/client"
+      ]
+    },
+    "build": {
+      "dependsOn": ["prisma-generate", "^build"]
+    }
+  }
+}

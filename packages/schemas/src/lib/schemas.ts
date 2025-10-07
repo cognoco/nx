@@ -1,3 +1,1 @@
-export function schemas(): string {
-  return 'schemas';
-}
+// This file is intentionally minimal - schemas are exported from specific domain files

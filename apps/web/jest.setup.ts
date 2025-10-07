@@ -1,3 +1,13 @@
+/**
+ * Workaround for Jest hanging after test completion.
+ *
+ * Next.js/React testing can leave stdin open in non-TTY environments (CI),
+ * causing Jest to wait indefinitely. This cleanup:
+ * 1. Unreferences and destroys stdin if not a TTY (releaseStdin)
+ * 2. Closes any residual file handles after all tests complete (closeResidualPipes)
+ *
+ * See: https://github.com/facebook/jest/issues/11404
+ */
 const releaseStdin = () => {
   if (!process.stdin) {
     return;
@@ -55,3 +65,6 @@ const closeResidualPipes = () => {
 
 releaseStdin();
 afterAll(closeResidualPipes);
+
+// Import jest-dom matchers for testing-library assertions
+import '@testing-library/jest-dom';

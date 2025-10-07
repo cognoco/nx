@@ -9,6 +9,20 @@ import {
 } from '@nx-test/schemas';
 
 /**
+ * Base procedure with typed error definitions
+ */
+const base = os.errors({
+  UNAUTHORIZED: {
+    status: 401,
+    message: 'Authentication required',
+  },
+  NOT_FOUND: {
+    status: 404,
+    message: 'Resource not found',
+  },
+});
+
+/**
  * Health check endpoint
  */
 const healthHandler = os.handler(() => {
@@ -18,13 +32,13 @@ const healthHandler = os.handler(() => {
 /**
  * List todos endpoint
  */
-const listTodosHandler = os
+const listTodosHandler = base
   .input(todoListSchema)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const userId = (context as { userId?: string }).userId;
 
     if (!userId) {
-      throw new Error('Unauthorized');
+      throw errors.UNAUTHORIZED();
     }
 
     const todos = await prisma.todo.findMany({
@@ -43,13 +57,13 @@ const listTodosHandler = os
 /**
  * Get single todo endpoint
  */
-const getTodoHandler = os
+const getTodoHandler = base
   .input(todoGetSchema)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const userId = (context as { userId?: string }).userId;
 
     if (!userId) {
-      throw new Error('Unauthorized');
+      throw errors.UNAUTHORIZED();
     }
 
     const todo = await prisma.todo.findFirst({
@@ -60,7 +74,7 @@ const getTodoHandler = os
     });
 
     if (!todo) {
-      throw new Error('Todo not found');
+      throw errors.NOT_FOUND();
     }
 
     return todo;
@@ -69,13 +83,13 @@ const getTodoHandler = os
 /**
  * Create todo endpoint
  */
-const createTodoHandler = os
+const createTodoHandler = base
   .input(todoCreateSchema)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const userId = (context as { userId?: string }).userId;
 
     if (!userId) {
-      throw new Error('Unauthorized');
+      throw errors.UNAUTHORIZED();
     }
 
     const todo = await prisma.todo.create({
@@ -91,13 +105,13 @@ const createTodoHandler = os
 /**
  * Update todo endpoint
  */
-const updateTodoHandler = os
+const updateTodoHandler = base
   .input(todoUpdateSchema)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const userId = (context as { userId?: string }).userId;
 
     if (!userId) {
-      throw new Error('Unauthorized');
+      throw errors.UNAUTHORIZED();
     }
 
     // Verify todo ownership
@@ -109,7 +123,7 @@ const updateTodoHandler = os
     });
 
     if (!existingTodo) {
-      throw new Error('Todo not found');
+      throw errors.NOT_FOUND();
     }
 
     const todo = await prisma.todo.update({
@@ -126,13 +140,13 @@ const updateTodoHandler = os
 /**
  * Delete todo endpoint
  */
-const deleteTodoHandler = os
+const deleteTodoHandler = base
   .input(todoDeleteSchema)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const userId = (context as { userId?: string }).userId;
 
     if (!userId) {
-      throw new Error('Unauthorized');
+      throw errors.UNAUTHORIZED();
     }
 
     // Verify todo ownership
@@ -144,7 +158,7 @@ const deleteTodoHandler = os
     });
 
     if (!existingTodo) {
-      throw new Error('Todo not found');
+      throw errors.NOT_FOUND();
     }
 
     await prisma.todo.delete({
