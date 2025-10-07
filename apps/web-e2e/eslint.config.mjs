@@ -9,4 +9,8 @@ export default [
     // Override or add rules here
     rules: {},
   },
+  {
+    // Ignore generated TypeScript declaration files
+    ignores: ['out-tsc/**/*'],
+  },
 ];

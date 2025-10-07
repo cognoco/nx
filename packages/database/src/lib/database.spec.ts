@@ -16,7 +16,7 @@ jest.mock('@prisma/client', () => {
   };
 });
 
-import { prisma } from './database';
+import { prisma } from './database.js';
 
 describe('database', () => {
   it('should export prisma client', () => {
