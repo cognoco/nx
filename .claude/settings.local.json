@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(git commit:*)",
-      "mcp__sequential-thinking-mcp__sequentialthinking"
+      "mcp__sequential-thinking-mcp__sequentialthinking",
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "mcp__context7-mcp__resolve-library-id",
+      "mcp__context7-mcp__get-library-docs"
     ],
     "deny": [],
     "ask": []
