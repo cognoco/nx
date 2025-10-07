@@ -9,20 +9,19 @@ A modern full-stack monorepo powered by [Nx](https://nx.dev), featuring web fron
 🚧 **In Development** - This project is currently being scaffolded with the following structure:
 
 ### Applications (`apps/`)
-- **frontend** - Next.js 15 web application (React 19) - *boilerplate*
-- **frontend-e2e** - Playwright E2E tests for frontend - *boilerplate*
-- **nx-test** - Original scaffold app - *to be removed*
-- **nx-test-e2e** - Original scaffold E2E tests - *to be removed*
+
+- **web** - Next.js 15 web application (React 19) - \*PoC scaffolding - not yet functioning app\*\*
+- **web-e2e** - Playwright E2E tests for web
+- **server** - Node.js backend server (esbuild) - \*PoC scaffolding - not yet functioning app\*\*
+- **server-e2e** - E2E tests for server
 
 ### Packages (`packages/`)
-- **api** - oRPC API layer with Zod validation - *starter configured*
 
-### Planned Structure (example)
-- **apps/web** - Production web frontend
-- **apps/mobile** - React Native mobile application
-- **apps/backend** - Node.js/NestJS backend server
-- **packages/types** - Shared TypeScript types
-- **packages/ui** - Shared UI components
+- **api** - oRPC API layer with Zod validation
+- **api-client** - Client for consuming the oRPC API
+- **database** - Prisma database client
+- **schemas** - Shared Zod schemas
+- **supabase-client** - Supabase client library
 
 ## Package Manager
 
@@ -44,53 +43,58 @@ pnpm add <package> --filter @nx-test/<package-name>
 ### Development
 
 ```bash
-# Run the frontend dev server
-npx nx dev frontend
+# Start all dev servers (web + server) in one terminal
+pnpm dev
 
-# Run the API in development mode
-npx nx serve api
+# Or run individually:
+pnpm nx dev web           # Web dev server (Next.js)
+pnpm nx serve server      # Server in development mode
 ```
 
 ### Building
 
 ```bash
 # Build a specific app
-npx nx build frontend
+pnpm nx build web
+pnpm nx build server
 
 # Build all apps
-npx nx run-many -t build
+pnpm nx run-many -t build
 
 # Build only what changed
-npx nx affected -t build
+pnpm nx affected -t build
 ```
 
 ### Testing
 
 ```bash
 # Run unit tests
-npx nx test frontend
+pnpm nx test web
+pnpm nx test server
 
 # Run E2E tests
-npx nx e2e frontend-e2e
+pnpm nx e2e web-e2e
+pnpm nx e2e server-e2e
 
 # Run tests for all projects
-npx nx run-many -t test
+pnpm nx run-many -t test
 
 # Run tests for affected projects only
-npx nx affected -t test
+pnpm nx affected -t test
 ```
 
 ### Linting & Formatting
 
 ```bash
 # Lint a project
-npx nx lint frontend
+pnpm nx lint web
+pnpm nx lint server
 
 # Format all files
-npx nx format:write
+pnpm nx format:write
 
 # Check formatting without changes
-npx nx format:check
+pnpm nx format:check
 ```
 
 ## Adding New Projects
@@ -99,29 +103,29 @@ npx nx format:check
 
 ```bash
 # Next.js app
-npx nx g @nx/next:app my-app
+pnpm nx g @nx/next:app my-app
 
 # React Native app
-npx nx g @nx/react-native:app mobile-app
+pnpm nx g @nx/react-native:app mobile-app
 
 # NestJS backend
-npx nx g @nx/nest:app backend
+pnpm nx g @nx/nest:app backend
 
 # Node.js app
-npx nx g @nx/node:app my-service
+pnpm nx g @nx/node:app my-service
 ```
 
 ### Generate a New Library
 
 ```bash
 # Shared library in packages/
-npx nx g @nx/node:lib my-lib --directory=packages/my-lib
+pnpm nx g @nx/node:lib my-lib --directory=packages/my-lib
 
 # React component library
-npx nx g @nx/react:lib ui --directory=packages/ui
+pnpm nx g @nx/react:lib ui --directory=packages/ui
 
 # TypeScript library
-npx nx g @nx/js:lib types --directory=packages/types
+pnpm nx g @nx/js:lib types --directory=packages/types
 ```
 
 ## Installed Nx Plugins
@@ -135,7 +139,7 @@ npx nx g @nx/js:lib types --directory=packages/types
 - `@nx/playwright` - E2E testing with Playwright
 - `@nx/eslint` - Linting with ESLint
 
-Run `npx nx list` to see all installed plugins.
+Run `pnpm nx list` to see all installed plugins.
 
 ## Project Graph
 
@@ -143,10 +147,10 @@ Visualize your workspace structure and dependencies:
 
 ```bash
 # Interactive project graph
-npx nx graph
+pnpm nx graph
 
 # See what's affected by your changes
-npx nx affected:graph
+pnpm nx graph --affected
 ```
 
 ## Tech Stack
@@ -166,7 +170,7 @@ This workspace is connected to Nx Cloud for distributed caching and task executi
 
 ```bash
 # Connect to Nx Cloud
-npx nx connect
+pnpm nx connect
 ```
 
 [Learn more about Nx Cloud](https://nx.app/?utm_source=nx_project)
@@ -184,19 +188,22 @@ Install the Nx Console extension for your IDE to get a visual interface for runn
 
 ```bash
 # Show project details
-npx nx show project frontend
+pnpm nx show project web
 
 # Run affected tasks
-npx nx affected -t lint,test,build
+pnpm nx affected -t lint,test,build
+
+# Type check (server only)
+pnpm nx typecheck server
 
 # Clear Nx cache
-npx nx reset
+pnpm nx reset
 
 # List available generators
-npx nx list @nx/next
+pnpm nx list @nx/next
 
 # Show help for a generator
-npx nx g @nx/next:app --help
+pnpm nx g @nx/next:app --help
 ```
 
 ## Resources

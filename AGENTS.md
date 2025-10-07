@@ -8,6 +8,7 @@
 This file provides guidance to agents when working with code in this repository.
 
 # Sub-Agent Usage Policy
+
 **Applies ONLY to agents capable of sub-agent use**, eg. **Claude Code**!
 
 **IMPORTANT:** You MUST proactively use sub-agents to preserve context and accelerate execution. Sub-agents are your primary tool for delegatable work.
@@ -18,7 +19,7 @@ Launch sub-agents for ANY of the following tasks:
 
 ### 1. Codebase Research & Analysis
 
-- Searching for files, functions, classes, or patterns      
+- Searching for files, functions, classes, or patterns
 - Understanding unfamiliar code structure or architecture
 - Finding all usages or references to a symbol
 - Analyzing dependencies or imports across multiple files
@@ -35,8 +36,7 @@ Launch sub-agents for ANY of the following tasks:
 
 - Multiple independent investigations
 - Testing different hypotheses simultaneously
-- Gathering information from multiple sources
-concurrently
+- Gathering information from multiple sources concurrently
 
 ### 4. Deep Troubleshooting
 
@@ -70,99 +70,167 @@ Before using Grep, Glob, Read, or WebSearch yourself, ask: "Could a sub-agent do
 # Project Structure
 
 This is an Nx monorepo workspace with the following setup:
+
 - **Framework**: Next.js 15.2.4 with React 19
 - **Testing**: Jest for unit tests, Playwright for E2E tests
 - **Styling**: Tailwind CSS with PostCSS
 - **Linting**: ESLint 9 with TypeScript ESLint
 - **TypeScript**: Strict mode enabled with composite builds
 
-**Project Status:** The project was recently scaffolded using NX. It currently has no actual applications or functionality!
+**Project Status:** Active development - Core infrastructure is in place with web frontend, backend server, and shared packages.
 
 ## Applications
 
-### nx-test (`apps/nx-test`)
-Next.js 15 application with React 19:
-- **Source code**: `apps/nx-test/src/app/` (Next.js App Router)
-- **Public assets**: `apps/nx-test/public/`
-- **Unit/component tests**: `apps/nx-test/specs/*.spec.tsx` (Jest + Testing Library)
-- **Configuration files**: `next.config.js`, `tailwind.config.js`, `postcss.config.js`, `jest.config.ts`
-- **Coverage output**: `coverage/apps/nx-test/`
-- **Dev server**: http://localhost:3000
+### web (`apps/web`)
 
-### nx-test-e2e (`apps/nx-test-e2e`)
-Playwright E2E test suite:
-- **Test files**: `apps/nx-test-e2e/src/*.spec.ts`
+Next.js 15 application with React 19:
+
+- **Source code**: `apps/web/src/app/` (Next.js App Router)
+- **Public assets**: `apps/web/public/`
+- **Unit/component tests**: `apps/web/specs/*.spec.tsx` (Jest + Testing Library)
+- **Configuration files**: `next.config.js`, `tailwind.config.js`, `postcss.config.js`, `jest.config.ts`
+- **Dev server**: Runs on available port (usually http://localhost:3000)
+
+### web-e2e (`apps/web-e2e`)
+
+Playwright E2E test suite for web:
+
+- **Test files**: `apps/web-e2e/src/*.spec.ts`
 - **Configuration**: `playwright.config.ts`
 - Tests run against chromium, firefox, and webkit
 - Automatically starts dev server before running tests
 
+### server (`apps/server`)
+
+Node.js backend server (esbuild):
+
+- **Source code**: `apps/server/src/`
+- **Entry point**: `apps/server/src/main.ts`
+- **Build output**: `apps/server/dist/`
+- Uses Prisma for database access
+- Built with esbuild for fast compilation
+
+### server-e2e (`apps/server-e2e`)
+
+E2E tests for server:
+
+- **Test files**: `apps/server-e2e/src/*.spec.ts`
+- Tests server endpoints and functionality
+
+## Packages
+
+### schemas (`packages/schemas`)
+
+Shared Zod validation schemas used across web, server, and API
+
+### database (`packages/database`)
+
+Prisma client and database utilities
+
+### api (`packages/api`)
+
+oRPC API layer with type-safe procedures
+
+### api-client (`packages/api-client`)
+
+Client library for consuming the oRPC API
+
+### supabase-client (`packages/supabase-client`)
+
+Supabase client configuration and utilities
+
 # Common Commands
 
+**Note:** This project uses **pnpm** as the package manager. All commands should use `pnpm nx` instead of `npx nx`.
+
 ## Development
+
 ```bash
-npx nx run @nx-test/nx-test:dev     # Start dev server at http://localhost:3000
-npx nx run @nx-test/nx-test:start   # Serve production build
+pnpm dev                    # Start all dev servers (web + server) in one terminal
+pnpm nx dev web             # Start Next.js dev server only
+pnpm nx serve server        # Start server in development mode only
 ```
 
 ## Building
+
 ```bash
-npx nx run @nx-test/nx-test:build   # Production build
+pnpm nx build web           # Build web application
+pnpm nx build server        # Build server
+pnpm nx run-many -t build   # Build all projects
 ```
 
 ## Testing
+
 ```bash
-npx nx run @nx-test/nx-test:test              # Run unit tests (Jest)
-npx nx run @nx-test/nx-test:test --watch      # Run tests in watch mode
-npx nx run @nx-test/nx-test-e2e:e2e           # Run E2E tests (Playwright)
-npx nx run-many -t test                       # Run tests for multiple projects
+# Unit tests
+pnpm nx test web            # Run web unit tests (Jest)
+pnpm nx test web --watch    # Run web tests in watch mode
+pnpm nx test server         # Run server unit tests
+
+# E2E tests
+pnpm nx e2e web-e2e         # Run web E2E tests (Playwright)
+pnpm nx e2e server-e2e      # Run server E2E tests
+
+# Multiple projects
+pnpm nx run-many -t test    # Run tests for all projects
 ```
 
 ## Linting & Formatting
+
 ```bash
-npx nx run @nx-test/nx-test:lint    # Lint with ESLint (includes @nx/enforce-module-boundaries)
-npx nx format:write                 # Format code with Prettier
-npx nx format:check                 # Check formatting without changes
+pnpm nx lint web            # Lint web with ESLint
+pnpm nx lint server         # Lint server with ESLint
+pnpm nx format:write        # Format code with Prettier
+pnpm nx format:check        # Check formatting without changes
 ```
 
 ## Type Checking
+
 ```bash
-npx nx run @nx-test/nx-test:typecheck   # Run TypeScript type checking
+pnpm nx typecheck server    # Run TypeScript type checking (server has typecheck target)
 ```
 
 ## Affected Commands
+
 ```bash
-npx nx affected -t test             # Test only affected projects
-npx nx affected -t build            # Build only affected projects
-npx nx affected -t lint,test,build  # Run multiple targets on affected projects
-npx nx affected:graph               # Visualize affected projects
+pnpm nx affected -t test             # Test only affected projects
+pnpm nx affected -t build            # Build only affected projects
+pnpm nx affected -t lint,test,build  # Run multiple targets on affected projects
 ```
 
 ## Project Management
+
 ```bash
-npx nx graph                        # View interactive project graph
-npx nx show project @nx-test/nx-test  # Show project details
-npx nx list                         # List installed plugins
+pnpm nx graph                    # View interactive project graph
+pnpm nx graph --affected         # Visualize affected projects
+pnpm nx show project web         # Show web project details
+pnpm nx show project server      # Show server project details
+pnpm nx list                     # List installed plugins
 ```
 
 # Architecture Notes
 
 ## Nx Configuration
+
 - Uses Nx plugins for TypeScript, Next.js, Playwright, ESLint, and Jest
 - Tasks are inferred automatically from plugins and configured in `nx.json`
 - Named inputs define what files are considered for caching: `default`, `production`, and `sharedGlobals`
 - Nx Cloud is configured with ID `68e13322b3d9b2316c1ef7ac`
 
 ## TypeScript Configuration
+
 - Base configuration uses strict mode with composite builds enabled
 - Module resolution set to `bundler` with ES2022 target
 - Declaration maps and emit declaration only are enabled for better IDE support
 
 ## Testing Strategy
+
 - Unit tests: Jest with jsdom environment via `@testing-library/react`
 - E2E tests: Playwright running against multiple browsers
 - Test target depends on build completion (`dependsOn: ["^build"]`)
 
 ## Coding Conventions
+
 - **TypeScript everywhere**: All source files use TypeScript
 - **Naming conventions**:
   - React components: `PascalCase` files (e.g., `Button.tsx`)
@@ -172,9 +240,10 @@ npx nx list                         # List installed plugins
   - API routes: `src/app/api/*/route.ts`
 - **Test files**: `*.spec.ts` or `*.spec.tsx` pattern
 - **ESLint**: Enforced via `eslint.config.mjs`, includes `@nx/enforce-module-boundaries`
-- **Prettier**: Format with `npx nx format:write`
+- **Prettier**: Format with `pnpm nx format:write`
 
 ## Commit Conventions
+
 - Follow Conventional Commits format:
   - `feat:` - New features
   - `fix:` - Bug fixes
@@ -183,13 +252,14 @@ npx nx list                         # List installed plugins
   - `test:` - Test updates
   - `chore:` - Build/tooling changes
 - Run relevant Nx targets before committing: `lint`, `test`, and E2E when applicable
-- For broader changes, consider `npx nx affected -t lint,test,build`
+- For broader changes, consider `pnpm nx affected -t lint,test,build`
 
 # important-instruction-reminders
+
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
@@ -206,10 +276,10 @@ NEVER proactively create documentation files (*.md) or README files. Only create
 # CI Error Guidelines
 
 If the user wants help with fixing an error in their CI pipeline, use the following flow:
+
 - Retrieve the list of current CI Pipeline Executions (CIPEs) using the `nx_cloud_cipe_details` tool
 - If there are any errors, use the `nx_cloud_fix_cipe_failure` tool to retrieve the logs for a specific task
 - Use the task logs to see what's wrong and help the user fix their problem. Use the appropriate tools if necessary
 - Make sure that the problem is fixed by running the task that you passed into the `nx_cloud_fix_cipe_failure` tool
-
 
 <!-- nx configuration end-->
