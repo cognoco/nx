@@ -67,7 +67,9 @@ export interface ClientConfig {
  *   },
  * });
  */
-export function createClient(config: ClientConfig): ReturnType<typeof createORPCClient<AppRouter>> {
+export function createClient(
+  config: ClientConfig
+): ReturnType<typeof createORPCClient<AppRouter>> {
   const link = new RPCLink({
     url: `${config.baseUrl}/rpc`,
     headers: config.headers,

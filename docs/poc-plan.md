@@ -5,17 +5,20 @@
 This plan outlines building a proof-of-concept (PoC) Nx monorepo that achieves **functional parity** with the bts-test Turborepo project, but using **Nx-native patterns and conventions**. The goal is to compare developer experience, build performance, and scalability between the two monorepo solutions.
 
 ### Key Principle
+
 We are **NOT** recreating bts-test's architecture. We are recreating its **functionality** using the Nx way of doing things.
 
 ### Technology Stack
 
 **Differences from bts-test**:
+
 - **Database & Auth**: Supabase (instead of Neon + Better-Auth)
 - **Mobile Routing**: Expo Router (instead of React Navigation)
 - **Monorepo**: Nx (instead of Turborepo)
 - **Linting and formatting**: ESLint+Prettier with Nx (instead of Ultracite)
 
 **Same as bts-test**:
+
 - **Web Framework**: Next.js 15 with React 19
 - **Mobile Framework**: React Native with Expo
 - **API Layer**: oRPC with Zod validation
@@ -25,11 +28,12 @@ We are **NOT** recreating bts-test's architecture. We are recreating its **funct
 
 ## Phase 0: Functional Inventory (1 hour)
 
-**Goal**: Understand what bts-test *does*, not how it's built.
+**Goal**: Understand what bts-test _does_, not how it's built.
 
 ### Deliverables
 
 #### Functional Checklist
+
 - ✅ Todo CRUD operations
 - ✅ User authentication (Supabase Auth instead of Better-Auth)
 - ✅ Database operations (Prisma with Supabase)
@@ -41,7 +45,9 @@ We are **NOT** recreating bts-test's architecture. We are recreating its **funct
 - ✅ Shared API client (oRPC client factory)
 
 #### Testing Checklist
+
 Manual tests that prove each function works:
+
 1. Database connection and migrations work
 2. API endpoints respond correctly
 3. Web UI performs CRUD operations
@@ -52,13 +58,14 @@ Manual tests that prove each function works:
 8. Data syncs between web and mobile
 
 #### Out of Scope
+
 - Exact file structure matching bts-test
 - Naming conventions matching bts-test
 - Package organization matching bts-test
 
 ## Phase 1: Nx-Native Scaffolding (2-3 hours)
 
-**Goal**: Generate Nx-idiomatic structure that *can* support bts-test functionality.
+**Goal**: Generate Nx-idiomatic structure that _can_ support bts-test functionality.
 
 **Approach**: Use Nx generators exclusively where possible.
 
@@ -99,6 +106,7 @@ npx nx g @nx/js:lib supabase-client --directory=packages/supabase-client --build
 ```
 
 **Note**: Nx may encourage MORE granular libraries than Turborepo. Consider adding:
+
 - `packages/ui` - Shared UI components (if needed)
 - Feature-specific libraries as needed
 
@@ -107,6 +115,7 @@ npx nx g @nx/js:lib supabase-client --directory=packages/supabase-client --build
 ### Step 1.3: Configure Tooling (Nx Defaults + Supabase)
 
 **Keep Nx defaults** (already configured):
+
 - ✅ ESLint setup (Nx way)
 - ✅ Jest configuration
 - ✅ Build caching
@@ -144,6 +153,7 @@ pnpm add @orpc/client --filter @nx-test/api-client
 ```
 
 **Manual checkpoint**:
+
 - [ ] `pnpm install` completes successfully
 - [ ] `npx nx run-many -t lint test` passes (even with empty implementations)
 - [ ] All packages build successfully: `npx nx run-many -t build`
@@ -153,33 +163,40 @@ pnpm add @orpc/client --filter @nx-test/api-client
 Minimal setup to prove structure works:
 
 **Database Package** (`packages/database`):
+
 - `prisma/schema.prisma` - Prisma schema pointing to Supabase
 - `src/index.ts` - Export Prisma client singleton
 
 **Schemas Package** (`packages/schemas`):
+
 - `src/todo.ts` - Placeholder Zod schemas for todo operations
 - `src/auth.ts` - Placeholder Zod schemas for auth (if needed)
 - `src/index.ts` - Re-export all schemas
 
 **API Client Package** (`packages/api-client`):
+
 - `src/index.ts` - Placeholder oRPC client factory
 - `src/types.ts` - Shared TypeScript types
 
 **Supabase Client Package** (`packages/supabase-client`):
+
 - `src/index.ts` - Supabase client factory function
 - `src/types/database.types.ts` - Generated Supabase database types (placeholder)
 - `src/utils.ts` - Shared Supabase utilities
 
 **Server App** (`apps/server`):
+
 - `src/main.ts` - Placeholder Express + oRPC server setup
 - `src/routes/` - Placeholder route structure
 
 **Web App** (`apps/web`):
+
 - `src/app/page.tsx` - Placeholder homepage
 - `src/app/todos/page.tsx` - Placeholder todos page
 - `src/lib/supabase.ts` - Supabase client initialization using `@nx-test/supabase-client` factory
 
 **Mobile App** (`apps/mobile`):
+
 - `app/_layout.tsx` - Expo Router root layout
 - `app/index.tsx` - Placeholder home screen
 - `app/todos.tsx` - Placeholder todos screen
@@ -198,6 +215,7 @@ Build functionality incrementally using vertical slices.
 **Why this order**: Nx emphasizes library dependencies. Prove they work first.
 
 #### Tasks
+
 1. Set up Supabase project and get connection string
 2. Complete Supabase client factory in `packages/supabase-client/src/index.ts`:
    - Export `createSupabaseClient(config)` factory function
@@ -216,6 +234,7 @@ Build functionality incrementally using vertical slices.
 8. Configure Nx dependency graph
 
 #### Manual Checkpoints
+
 - [ ] `pnpm --filter @nx-test/supabase-client build` succeeds
 - [ ] `pnpm --filter @nx-test/database db:push` works
 - [ ] Supabase dashboard shows `Todo` table
@@ -223,6 +242,7 @@ Build functionality incrementally using vertical slices.
 - [ ] `npx nx graph` shows correct dependencies including supabase-client
 
 #### Completion Criteria
+
 - Supabase client factory can be imported from `@nx-test/supabase-client`
 - Prisma client can be imported from `@nx-test/database`
 - Zod schemas can be imported from `@nx-test/schemas`
@@ -233,6 +253,7 @@ Build functionality incrementally using vertical slices.
 **Goal**: Backend works with type-safe oRPC.
 
 #### Tasks
+
 1. Set up oRPC server in `apps/server/src/main.ts`
 2. Create todo service in `apps/server/src/services/todo.service.ts`:
    - `createTodo(input)` - Create new todo
@@ -247,6 +268,7 @@ Build functionality incrementally using vertical slices.
 8. Add integration tests for API endpoints
 
 #### Manual Checkpoints
+
 - [ ] `pnpm --filter server dev` starts server on expected port
 - [ ] Curl/Postman can hit health check endpoint
 - [ ] Can create todo via API (with auth token)
@@ -256,6 +278,7 @@ Build functionality incrementally using vertical slices.
 - [ ] `npx nx affected:graph` shows server depends on database & schemas
 
 #### Completion Criteria
+
 - Server exposes working oRPC endpoints
 - Authentication is required for protected routes
 - All CRUD operations work
@@ -266,6 +289,7 @@ Build functionality incrementally using vertical slices.
 **Goal**: Shared oRPC client works for both web and mobile.
 
 #### Tasks
+
 1. Create oRPC client factory in `packages/api-client/src/index.ts`
 2. Support both web (Next.js) and native (Expo) configurations:
    - Web: Use fetch with credentials
@@ -275,12 +299,14 @@ Build functionality incrementally using vertical slices.
 5. Add tests for client initialization
 
 #### Manual Checkpoints
+
 - [ ] Client can be initialized with web config
 - [ ] Client can be initialized with native config
 - [ ] TypeScript autocomplete works for all endpoints
 - [ ] `pnpm --filter @nx-test/api-client test` passes
 
 #### Completion Criteria
+
 - API client package exports working factory function
 - Type safety is enforced across client and server
 - All tests pass
@@ -290,6 +316,7 @@ Build functionality incrementally using vertical slices.
 **Goal**: User-facing web application works.
 
 #### Tasks
+
 1. Set up Supabase client in `apps/web/src/lib/supabase.ts` using `@nx-test/supabase-client` factory
 2. Create API client instance in `apps/web/src/lib/api.ts` using `@nx-test/api-client`
 3. Implement todo UI in `apps/web/src/app/todos/page.tsx`:
@@ -308,6 +335,7 @@ Build functionality incrementally using vertical slices.
    - Todo CRUD operations
 
 #### Manual Checkpoints
+
 - [ ] `pnpm dev` runs both server and web concurrently
 - [ ] Can access login page
 - [ ] Can create account via signup page
@@ -320,6 +348,7 @@ Build functionality incrementally using vertical slices.
 - [ ] `pnpm --filter web-e2e e2e` passes
 
 #### Completion Criteria
+
 - Full authentication flow works
 - Full todo CRUD works in browser
 - E2E tests pass
@@ -330,6 +359,7 @@ Build functionality incrementally using vertical slices.
 **Goal**: Prove cross-platform works with Expo Router.
 
 #### Tasks
+
 1. Set up Supabase client for React Native in `apps/mobile/lib/supabase.ts` using `@nx-test/supabase-client` factory with AsyncStorage
 2. Create API client instance in `apps/mobile/lib/api.ts` using `@nx-test/api-client`
 3. Configure Expo Router layout in `apps/mobile/app/_layout.tsx`:
@@ -350,6 +380,7 @@ Build functionality incrementally using vertical slices.
 8. Test data sync between web and mobile
 
 #### Manual Checkpoints
+
 - [ ] `pnpm --filter mobile dev` starts Expo dev server
 - [ ] Expo Go loads mobile app
 - [ ] Can navigate between screens using Expo Router
@@ -363,6 +394,7 @@ Build functionality incrementally using vertical slices.
 - [ ] Changes made on mobile appear on web after refresh
 
 #### Completion Criteria
+
 - Full authentication flow works on mobile
 - Full todo CRUD works on mobile
 - Expo Router navigation works correctly
@@ -372,6 +404,7 @@ Build functionality incrementally using vertical slices.
 ## Success Criteria
 
 ### Functional Parity Achieved When:
+
 1. ✅ Users can sign up and log in (web and mobile) via Supabase Auth
 2. ✅ Authenticated users can create, read, update, delete todos
 3. ✅ Data is persisted to Supabase database via Prisma
@@ -381,6 +414,7 @@ Build functionality incrementally using vertical slices.
 7. ✅ Both web and mobile apps are functional
 
 ### Nx vs Turborepo Comparison Points:
+
 - **Developer Experience**: Code generation, conventions, error messages
 - **Build Performance**: Caching, affected commands, incremental builds
 - **Dependency Management**: How libraries reference each other
@@ -390,16 +424,16 @@ Build functionality incrementally using vertical slices.
 
 ## Estimated Timeline
 
-| Phase | Estimated Time | Cumulative |
-|-------|---------------|------------|
-| Phase 0: Functional Inventory | 1 hour | 1 hour |
-| Phase 1: Scaffolding | 2-3 hours | 3-4 hours |
-| Slice 1: Database + Schemas | 2 hours | 5-6 hours |
-| Slice 2: Server API | 3-4 hours | 8-10 hours |
-| Slice 3: API Client | 1-2 hours | 9-12 hours |
-| Slice 4: Web Frontend | 3-4 hours | 12-16 hours |
-| Slice 5: Mobile App | 4-5 hours | 16-21 hours |
-| **Total** | **16-21 hours** | **~2-3 days** |
+| Phase                         | Estimated Time  | Cumulative    |
+| ----------------------------- | --------------- | ------------- |
+| Phase 0: Functional Inventory | 1 hour          | 1 hour        |
+| Phase 1: Scaffolding          | 2-3 hours       | 3-4 hours     |
+| Slice 1: Database + Schemas   | 2 hours         | 5-6 hours     |
+| Slice 2: Server API           | 3-4 hours       | 8-10 hours    |
+| Slice 3: API Client           | 1-2 hours       | 9-12 hours    |
+| Slice 4: Web Frontend         | 3-4 hours       | 12-16 hours   |
+| Slice 5: Mobile App           | 4-5 hours       | 16-21 hours   |
+| **Total**                     | **16-21 hours** | **~2-3 days** |
 
 ## Notes
 

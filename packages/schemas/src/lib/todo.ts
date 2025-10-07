@@ -4,7 +4,10 @@ import { z } from 'zod';
  * Schema for creating a new todo
  */
 export const todoCreateSchema = z.object({
-  text: z.string().min(1, 'Todo text cannot be empty').max(500, 'Todo text is too long'),
+  text: z
+    .string()
+    .min(1, 'Todo text cannot be empty')
+    .max(500, 'Todo text is too long'),
 });
 
 export type TodoCreate = z.infer<typeof todoCreateSchema>;
@@ -14,7 +17,11 @@ export type TodoCreate = z.infer<typeof todoCreateSchema>;
  */
 export const todoUpdateSchema = z.object({
   id: z.string().uuid('Invalid todo ID'),
-  text: z.string().min(1, 'Todo text cannot be empty').max(500, 'Todo text is too long').optional(),
+  text: z
+    .string()
+    .min(1, 'Todo text cannot be empty')
+    .max(500, 'Todo text is too long')
+    .optional(),
   completed: z.boolean().optional(),
 });
 

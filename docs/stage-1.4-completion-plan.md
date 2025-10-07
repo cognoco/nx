@@ -31,19 +31,24 @@ Stage 1.4 ("Add Placeholder Files") is currently **~70% complete**. The backend 
 ### Completed Components ✅
 
 **Backend Packages (Production-Ready):**
+
 - **Database** (`packages/database`)
+
   - ✅ `prisma/schema.prisma` - Complete Todo model with Supabase config
   - ✅ `src/lib/database.ts` - Prisma client singleton with logging
 
 - **Schemas** (`packages/schemas`)
+
   - ✅ `src/lib/todo.ts` - Comprehensive Zod schemas for CRUD operations
   - ✅ `src/index.ts` - Re-exports all schemas
 
 - **API Client** (`packages/api-client`)
+
   - ✅ `src/lib/api-client.ts` - oRPC client factory with web/native support
   - ⚠️ Types defined inline (not in separate `types.ts`, but functional)
 
 - **Supabase Client** (`packages/supabase-client`)
+
   - ✅ `src/lib/supabase-client.ts` - Full factory with browser/React Native support
   - ✅ `src/lib/database.types.ts` - Generated type stubs
 
@@ -54,6 +59,7 @@ Stage 1.4 ("Add Placeholder Files") is currently **~70% complete**. The backend 
 ### Incomplete Components ❌
 
 **Web App** (`apps/web`) - **30% Complete**:
+
 - ✅ `src/app/layout.tsx` - Root layout exists
 - ⚠️ `src/app/page.tsx` - Exists but contains 468 lines of Nx boilerplate
 - ❌ `src/app/todos/page.tsx` - Not created
@@ -62,6 +68,7 @@ Stage 1.4 ("Add Placeholder Files") is currently **~70% complete**. The backend 
 ### Technical Context
 
 **Framework & Versions:**
+
 - Next.js: 15.2.4 (App Router)
 - React: 19.0.0
 - TypeScript: Strict mode enabled
@@ -69,6 +76,7 @@ Stage 1.4 ("Add Placeholder Files") is currently **~70% complete**. The backend 
 - Nx: Monorepo with inferred tasks
 
 **Environment:**
+
 - Path alias: `@/*` → `apps/web/src/*`
 - Workspace packages available via tsconfig paths
 - No UI component libraries installed (using base React + Tailwind)
@@ -88,8 +96,7 @@ Task: Analyze workspace package dependencies for web app
 Tools: Read, Grep, Glob, sequential-thinking-mcp
 Duration: 15-20 minutes
 
-Steps:
-  1. Read apps/web/package.json
+Steps: 1. Read apps/web/package.json
   2. Check if @nx-test/supabase-client is listed as dependency
   3. Check if @nx-test/schemas is listed as dependency
   4. Read tsconfig.base.json to verify path mappings
@@ -103,6 +110,7 @@ Deliverable:
 ```
 
 **Expected Outcome:**
+
 - Likely need to add workspace packages to `apps/web/package.json`:
   ```json
   "dependencies": {
@@ -119,7 +127,7 @@ Deliverable:
 
 #### Sub-Agent Task 2A: Create `src/lib/supabase.ts`
 
-```yaml
+````yaml
 Task: Implement Supabase client initialization for web app
 Tools: Read, Write, sequential-thinking-mcp, context7-mcp
 Duration: 20-30 minutes
@@ -167,13 +175,15 @@ Example Structure:
   });
 
   export type { Database } from '@nx-test/supabase-client';
-  ```
+````
 
 Verification:
-  - TypeScript compiles without errors
-  - Imports resolve correctly
-  - File is ~20-40 lines (concise)
-```
+
+- TypeScript compiles without errors
+- Imports resolve correctly
+- File is ~20-40 lines (concise)
+
+````
 
 #### Sub-Agent Task 2B: Update `src/app/page.tsx`
 
@@ -236,14 +246,16 @@ Example Structure:
       </main>
     );
   }
-  ```
+````
 
 Verification:
-  - TypeScript compiles without errors
-  - Tailwind classes are valid
-  - Link component used correctly
-  - File is concise (~30-50 lines)
-```
+
+- TypeScript compiles without errors
+- Tailwind classes are valid
+- Link component used correctly
+- File is concise (~30-50 lines)
+
+````
 
 #### Sub-Agent Task 2C: Create `src/app/todos/page.tsx`
 
@@ -359,14 +371,16 @@ Example Structure:
       </main>
     );
   }
-  ```
+````
 
 Verification:
-  - TypeScript compiles without errors
-  - Todo type imports from @nx-test/schemas
-  - Tailwind styling works correctly
-  - File is well-structured (~70-100 lines)
-```
+
+- TypeScript compiles without errors
+- Todo type imports from @nx-test/schemas
+- Tailwind styling works correctly
+- File is well-structured (~70-100 lines)
+
+````
 
 **Parallel Execution Strategy:**
 - Launch all 3 sub-agents (2A, 2B, 2C) in a single message
@@ -431,16 +445,16 @@ Deliverable:
   - List of any errors encountered
   - Confirmation that manual checkpoint is met:
     "pnpm dev starts all apps (even if they don't do anything yet)"
-```
+````
 
 **Expected Issues & Solutions:**
 
-| Issue | Solution |
-|-------|----------|
-| Missing environment variables | Note in report - will be set up in Phase 2 |
-| Workspace package import errors | Verify tsconfig paths and package.json |
-| Tailwind classes not working | Check global.css imports |
-| TypeScript errors | Review type imports from workspace packages |
+| Issue                           | Solution                                    |
+| ------------------------------- | ------------------------------------------- |
+| Missing environment variables   | Note in report - will be set up in Phase 2  |
+| Workspace package import errors | Verify tsconfig paths and package.json      |
+| Tailwind classes not working    | Check global.css imports                    |
+| TypeScript errors               | Review type imports from workspace packages |
 
 ---
 
@@ -451,18 +465,21 @@ Deliverable:
 ### General Guidelines
 
 1. **Use Sequential Thinking** for complex decisions:
+
    - Use `mcp__sequential-thinking-mcp__sequentialthinking` when:
      - Deciding on implementation patterns
      - Resolving ambiguities
      - Making architectural choices
 
 2. **Use Context7** for library documentation:
+
    - Use `mcp__context7-mcp__resolve-library-id` and `mcp__context7-mcp__get-library-docs` when:
      - Unfamiliar with Next.js 15 patterns
      - Need Supabase integration examples
      - Clarifying React 19 APIs
 
 3. **Follow Project Standards**:
+
    - TypeScript strict mode
    - No `any` types without JSDoc explanation
    - Functional components only
@@ -522,12 +539,14 @@ Begin your work now.
 ### File Creation ✓
 
 - [ ] Created `apps/web/src/lib/supabase.ts`
+
   - [ ] Imports from @nx-test/supabase-client work
   - [ ] Client instance exported
   - [ ] TypeScript types correct
   - [ ] JSDoc comments included
 
 - [ ] Updated `apps/web/src/app/page.tsx`
+
   - [ ] Nx boilerplate removed
   - [ ] Clean, minimal homepage
   - [ ] Link to /todos works
@@ -588,11 +607,13 @@ None identified for this phase.
 ### Mitigation Strategies
 
 1. **Import Issues**:
+
    - Verify tsconfig paths first (Phase 1)
    - Test imports in isolation
    - Fall back to relative paths if needed
 
 2. **Missing Env Vars**:
+
    - Code should handle undefined gracefully
    - Add clear error messages
    - Document in comments
@@ -640,6 +661,7 @@ Stage 1.4 is **100% complete** when:
 ### Immediate
 
 1. **Run full test suite**:
+
    ```bash
    npx nx affected -t test
    ```
@@ -668,6 +690,7 @@ Stage 1.4 is **100% complete** when:
 **Estimated LOC**: 20-40
 
 **Key Features**:
+
 - Uses workspace package for client creation
 - Handles environment variables
 - Exports typed client
@@ -683,6 +706,7 @@ Stage 1.4 is **100% complete** when:
 **Estimated LOC**: 30-50
 
 **Key Features**:
+
 - Clean, minimal design
 - Tailwind CSS styling
 - Link to todos page
@@ -698,6 +722,7 @@ Stage 1.4 is **100% complete** when:
 **Estimated LOC**: 70-100
 
 **Key Features**:
+
 - Imports Todo type from schemas package
 - Hardcoded placeholder data
 - List UI with Tailwind
@@ -724,11 +749,13 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ### Handling Missing Vars in Stage 1.4
 
 Code should check for undefined and either:
+
 1. Use empty string fallback
 2. Skip client initialization
 3. Log warning message
 
 Example:
+
 ```typescript
 const url = getSupabaseUrl();
 const key = getSupabaseAnonKey();

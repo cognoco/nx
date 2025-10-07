@@ -44,7 +44,9 @@ const PLACEHOLDER_TODOS: Todo[] = [
 ];
 
 export default function TodosPage() {
-  const completedCount = PLACEHOLDER_TODOS.filter((todo) => todo.completed).length;
+  const completedCount = PLACEHOLDER_TODOS.filter(
+    (todo) => todo.completed
+  ).length;
   const totalCount = PLACEHOLDER_TODOS.length;
 
   return (
@@ -96,8 +98,8 @@ export default function TodosPage() {
                 Placeholder Data
               </h3>
               <p className="text-sm text-blue-700 mt-1">
-                This page displays hardcoded sample todos. In Phase 2, this will be
-                replaced with real data from the Supabase backend.
+                This page displays hardcoded sample todos. In Phase 2, this will
+                be replaced with real data from the Supabase backend.
               </p>
             </div>
           </div>
@@ -139,14 +141,18 @@ export default function TodosPage() {
                           year: 'numeric',
                         })}
                       </span>
-                      {todo.createdAt.getTime() !== todo.updatedAt.getTime() && (
+                      {todo.createdAt.getTime() !==
+                        todo.updatedAt.getTime() && (
                         <span>
                           Updated:{' '}
-                          {new Date(todo.updatedAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
+                          {new Date(todo.updatedAt).toLocaleDateString(
+                            'en-US',
+                            {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            }
+                          )}
                         </span>
                       )}
                     </div>

@@ -12,6 +12,7 @@
 ### Problem Statement
 
 The server build is failing with TypeScript errors:
+
 - **TS5090:** "Non-relative paths are not allowed when 'baseUrl' is not set"
 - **TS6307:** "File '...' is not listed within the file list of project"
 
@@ -24,12 +25,14 @@ The server build is failing with TypeScript errors:
 ### Solution Strategy
 
 **Future-Proof Approach (Recommended):**
+
 - Add `baseUrl: "."` to fix TS5090
 - Change base to `moduleResolution: "nodenext"` for maximum compatibility
 - Align with Nx 2024-2025 best practices
 - Ensure packages use `.js` extensions (ESM requirement)
 
 **Alternative (Quick Fix):**
+
 - Just add `baseUrl: "."` to `tsconfig.base.json`
 - Keep everything else as-is
 - Faster but doesn't address architectural mismatch
@@ -41,16 +44,19 @@ The server build is failing with TypeScript errors:
 ### Key Findings from Research
 
 1. **Nx Official Guidance (2024-2025):**
+
    - Recommends `moduleResolution: "nodenext"` for monorepos
    - Moving from path aliases to package manager workspaces
    - Project references are the modern approach
 
 2. **TypeScript Team Guidance:**
+
    - `"bundler"` is "infectious" - allows bundler-only code
    - `"nodenext"` ensures maximum compatibility (Node.js + bundlers)
    - Quote: "nodenext is the right option for authoring libraries"
 
 3. **Next.js 15 Compatibility:**
+
    - Default: `"bundler"` but works fine with `"nodenext"`
    - Modern bundlers handle `nodenext` output seamlessly
 
@@ -61,11 +67,13 @@ The server build is failing with TypeScript errors:
 ### Current State Analysis
 
 **What's Correct:**
+
 - ✅ Packages using `"nodenext"` (database, schemas, etc.)
 - ✅ Packages already use `.js` extensions in exports
 - ✅ Project references configured
 
 **What's Incorrect:**
+
 - ❌ Base config using `"bundler"` (should be `"nodenext"`)
 - ❌ Missing `baseUrl` in base config
 - ❌ Server using `"bundler"` (it's a Node.js app!)
@@ -80,6 +88,7 @@ The server build is failing with TypeScript errors:
 Read and document current state of all TypeScript configurations.
 
 **Files to Read:**
+
 - `tsconfig.base.json`
 - `apps/server/tsconfig.json`
 - `apps/server/tsconfig.app.json`
@@ -93,6 +102,7 @@ Read and document current state of all TypeScript configurations.
 - `packages/supabase-client/src/index.ts`
 
 **Deliverable:**
+
 - Inventory of all current settings
 - List of files with/without `.js` extensions
 - Baseline for comparison
@@ -106,6 +116,7 @@ Read and document current state of all TypeScript configurations.
 **Location:** `C:\Dev\Projects\Products\Apps\Sandbox\nx-test\tsconfig.base.json`
 
 **Current State:**
+
 ```json
 {
   "compilerOptions": {
@@ -115,8 +126,8 @@ Read and document current state of all TypeScript configurations.
     "importHelpers": true,
     "isolatedModules": true,
     "lib": ["es2022"],
-    "module": "esnext",                    // ← CHANGE THIS
-    "moduleResolution": "bundler",         // ← CHANGE THIS
+    "module": "esnext", // ← CHANGE THIS
+    "moduleResolution": "bundler", // ← CHANGE THIS
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -137,18 +148,19 @@ Read and document current state of all TypeScript configurations.
 ```
 
 **Required Changes:**
+
 ```json
 {
   "compilerOptions": {
-    "baseUrl": ".",                        // ADD THIS LINE
+    "baseUrl": ".", // ADD THIS LINE
     "composite": true,
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "importHelpers": true,
     "isolatedModules": true,
     "lib": ["es2022"],
-    "module": "nodenext",                  // CHANGE: esnext → nodenext
-    "moduleResolution": "nodenext",        // CHANGE: bundler → nodenext
+    "module": "nodenext", // CHANGE: esnext → nodenext
+    "moduleResolution": "nodenext", // CHANGE: bundler → nodenext
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -172,29 +184,21 @@ Read and document current state of all TypeScript configurations.
 **Location:** `C:\Dev\Projects\Products\Apps\Sandbox\nx-test\apps\server\tsconfig.app.json`
 
 **Current State:**
+
 ```json
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "module": "esnext",                    // ← REMOVE (inherit from base)
+    "module": "esnext", // ← REMOVE (inherit from base)
     "types": ["node"],
     "rootDir": "src",
-    "moduleResolution": "bundler",         // ← REMOVE (inherit from base)
+    "moduleResolution": "bundler", // ← REMOVE (inherit from base)
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
     // Missing emitDeclarationOnly: false  // ← ADD THIS
   },
   "include": ["src/**/*.ts"],
-  "exclude": [
-    "out-tsc",
-    "dist",
-    "jest.config.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "eslint.config.js",
-    "eslint.config.cjs",
-    "eslint.config.mjs"
-  ],
+  "exclude": ["out-tsc", "dist", "jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts", "eslint.config.js", "eslint.config.cjs", "eslint.config.mjs"],
   "references": [
     {
       "path": "../../packages/schemas/tsconfig.lib.json"
@@ -207,6 +211,7 @@ Read and document current state of all TypeScript configurations.
 ```
 
 **Required Changes:**
+
 ```json
 {
   "extends": "../../tsconfig.base.json",
@@ -215,20 +220,11 @@ Read and document current state of all TypeScript configurations.
     "types": ["node"],
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
-    "emitDeclarationOnly": false           // ADD THIS LINE
+    "emitDeclarationOnly": false // ADD THIS LINE
     // REMOVED: module, moduleResolution (now inherit from base)
   },
   "include": ["src/**/*.ts"],
-  "exclude": [
-    "out-tsc",
-    "dist",
-    "jest.config.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "eslint.config.js",
-    "eslint.config.cjs",
-    "eslint.config.mjs"
-  ],
+  "exclude": ["out-tsc", "dist", "jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts", "eslint.config.js", "eslint.config.cjs", "eslint.config.mjs"],
   "references": [
     {
       "path": "../../packages/schemas/tsconfig.lib.json"
@@ -250,14 +246,17 @@ Verify all packages use `.js` extensions in their exports.
 **Files to Check:**
 
 1. **`packages/database/src/index.ts`**
+
    - Expected: `export * from './lib/database.js';`
    - Status: ✅ Already correct (verified in earlier stages)
 
 2. **`packages/schemas/src/index.ts`**
+
    - Expected: `export * from './lib/todo.js';`
    - Status: ✅ Already correct (verified in earlier stages)
 
 3. **`packages/supabase-client/src/index.ts`**
+
    - Expected: Exports with `.js` extensions
    - Status: ⚠️ Need to verify
 
@@ -268,16 +267,19 @@ Verify all packages use `.js` extensions in their exports.
 **If Missing `.js` Extensions:**
 
 Change:
+
 ```typescript
 export * from './lib/filename';
 ```
 
 To:
+
 ```typescript
 export * from './lib/filename.js';
 ```
 
 **Why `.js` for `.ts` files?**
+
 - ESM standard: import specifiers reference the OUTPUT file
 - TypeScript doesn't rewrite imports
 - Required by `moduleResolution: "nodenext"`
@@ -291,50 +293,60 @@ export * from './lib/filename.js';
 #### Sub-Agent A: Web App Build Test
 
 **Command:**
+
 ```bash
 npx nx run @nx-test/web:build
 ```
 
 **What to Check:**
+
 - Does build succeed?
 - Any TypeScript errors?
 - Any Next.js compatibility issues?
 
 **Expected Outcome:**
+
 - ✅ Should work (Next.js handles nodenext)
 - ⚠️ If fails: May need to add bundler override (see Phase 4)
 
 #### Sub-Agent B: Server Build Test
 
 **Command:**
+
 ```bash
 npx nx run @nx-test/server:build:production
 ```
 
 **What to Check:**
+
 - TS5090 resolved? (baseUrl fix)
 - TS6307 resolved? (project references + nodenext)
 - Build completes successfully?
 
 **Expected Outcome:**
+
 - ✅ Should succeed - THIS IS THE PRIMARY GOAL!
 
 #### Sub-Agent C: Package Builds
 
 **Command:**
+
 ```bash
 npx nx run-many -t build --projects=@nx-test/database,@nx-test/schemas,@nx-test/supabase-client
 ```
 
 **What to Check:**
+
 - All packages build?
 - No TypeScript errors?
 - Declaration files generated?
 
 **Expected Outcome:**
+
 - ✅ Should work (packages already use nodenext)
 
 **Success Criteria for Phase 3:**
+
 - Server build passes (errors fixed!)
 - Packages build successfully
 - Web either passes OR we identify specific fix
@@ -350,18 +362,20 @@ npx nx run-many -t build --projects=@nx-test/database,@nx-test/schemas,@nx-test/
 **Option A: Add Bundler Override**
 
 Edit `apps/web/tsconfig.json`:
+
 ```json
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",  // Override base config
-    "module": "esnext",              // Override base config
+    "moduleResolution": "bundler", // Override base config
+    "module": "esnext" // Override base config
     // ... rest of config
   }
 }
 ```
 
 **Option B: Investigate Specific Error**
+
 - Read error messages carefully
 - May be unrelated to module resolution
 - Fix specific issue
@@ -369,6 +383,7 @@ Edit `apps/web/tsconfig.json`:
 #### If Server Build Still Fails:
 
 **Troubleshooting Steps:**
+
 1. Check for missing `.js` extensions in package exports
 2. Verify project references point to correct files
 3. Ensure Prisma client is generated
@@ -377,6 +392,7 @@ Edit `apps/web/tsconfig.json`:
 #### If Packages Fail:
 
 **Common Fixes:**
+
 - Add missing `.js` extensions
 - Verify `tsconfig.lib.json` settings
 - Check for circular dependencies
@@ -390,11 +406,13 @@ Edit `apps/web/tsconfig.json`:
 #### 5.1 Web App Dev Server
 
 **Command:**
+
 ```bash
 npx nx run @nx-test/web:dev
 ```
 
 **Verify:**
+
 - ✅ Server starts without errors
 - ✅ Accessible at http://localhost:3000
 - ✅ Hot reload works
@@ -403,17 +421,20 @@ npx nx run @nx-test/web:dev
 #### 5.2 Server Dev Server
 
 **Command:**
+
 ```bash
 npx nx run @nx-test/server:serve
 ```
 
 **Verify:**
+
 - ✅ Server starts without errors (CURRENTLY BROKEN!)
 - ✅ No runtime errors
 - ✅ API endpoints respond correctly
 - ✅ Prisma client works
 
 **Success Criteria:**
+
 - Both dev servers functional
 - No console errors
 - Applications work as expected
@@ -427,6 +448,7 @@ npx nx run @nx-test/server:serve
 #### 6.1 Linting
 
 **Command:**
+
 ```bash
 npx nx run-many -t lint
 ```
@@ -436,6 +458,7 @@ npx nx run-many -t lint
 #### 6.2 Type Checking
 
 **Command:**
+
 ```bash
 npx nx run @nx-test/server:typecheck
 npx nx run @nx-test/web:typecheck
@@ -446,6 +469,7 @@ npx nx run @nx-test/web:typecheck
 #### 6.3 Affected Projects Graph
 
 **Command:**
+
 ```bash
 npx nx affected:graph
 ```
@@ -455,6 +479,7 @@ npx nx affected:graph
 #### 6.4 Summary Report
 
 **Create a report documenting:**
+
 - All changes made
 - Any overrides added (e.g., web using bundler)
 - Test results from all phases
@@ -480,20 +505,24 @@ git checkout tsconfig.base.json
 ### Rollback Scenarios
 
 **If Everything Breaks:**
+
 - Revert all changes via git
 - Consider minimal fix (just add baseUrl, keep bundler)
 
 **If Only Web App Breaks:**
+
 - Add bundler override to `apps/web/tsconfig.json` (see Phase 4)
 - This is expected and acceptable
 
 **If Only Server Breaks:**
+
 - Investigate specific errors
 - Check `.js` extensions
 - Verify Prisma client generation
 - May need to debug specific import issues
 
 **If Packages Break:**
+
 - Add missing `.js` extensions
 - Check `tsconfig.lib.json` settings
 
@@ -537,21 +566,24 @@ If the future-proof approach seems too complex, here's the minimal fix:
 ### Just Add baseUrl
 
 **Edit `tsconfig.base.json`:**
+
 ```json
 {
   "compilerOptions": {
-    "baseUrl": ".",  // ADD ONLY THIS LINE
+    "baseUrl": "." // ADD ONLY THIS LINE
     // ... everything else stays the same
   }
 }
 ```
 
 **Pros:**
+
 - ✅ Fixes TS5090 immediately
 - ✅ Minimal changes
 - ✅ Low risk
 
 **Cons:**
+
 - ❌ Doesn't fix architectural mismatch
 - ❌ Not aligned with Nx best practices
 - ❌ May need revisiting later
