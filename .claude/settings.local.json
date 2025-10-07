@@ -6,7 +6,12 @@
       "Bash(test:*)",
       "Bash(cat:*)",
       "mcp__context7-mcp__resolve-library-id",
-      "mcp__context7-mcp__get-library-docs"
+      "mcp__context7-mcp__get-library-docs",
+      "WebSearch",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm nx show project:*)",
+      "Bash(pnpm nx show:*)",
+      "WebFetch(domain:www.prisma.io)"
     ],
     "deny": [],
     "ask": []
