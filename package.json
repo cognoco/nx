@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nx run-many -t dev,serve --projects=web,server",
+    "dev": "nx run workspace:dev",
     "postinstall": "pnpm nx run database:prisma-generate"
   },
   "private": true,
