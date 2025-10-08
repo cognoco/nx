@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
 import { RPCHandler } from '@orpc/server/node';
 import { router } from './router';
@@ -21,18 +21,32 @@ app.get('/', (req, res) => {
 
 // oRPC endpoint
 app.use('/rpc*', async (req, res, next) => {
-  const { matched } = await rpcHandler.handle(req, res, {
-    prefix: '/rpc',
-    context: {
-      headers: req.headers,
-      // TODO: Add authentication middleware to extract userId from JWT
-      // For now, userId will be undefined (all requests will be unauthorized)
-      userId: undefined,
-    },
-  });
+  try {
+    const { matched } = await rpcHandler.handle(req, res, {
+      prefix: '/rpc',
+      context: {
+        headers: req.headers,
+        // TODO: Add authentication middleware to extract userId from JWT
+        // For now, userId will be undefined (all requests will be unauthorized)
+        userId: undefined,
+      },
+    });
 
-  if (matched) return;
-  next();
+    if (matched) return;
+    next();
+  } catch (error) {
+    console.error('RPC handler error:', error);
+    next(error);
+  }
+});
+
+// Global error handler
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+  console.error('Server error:', err);
+  res.status(500).json({
+    error: 'Internal server error',
+    ...(process.env['NODE_ENV'] !== 'production' && { details: err.message }),
+  });
 });
 
 app.listen(port, host, () => {
