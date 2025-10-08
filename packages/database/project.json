@@ -10,7 +10,7 @@
         "command": "prisma generate --schema=./prisma/schema.prisma",
         "cwd": "packages/database"
       },
-      "cache": true,
+      "cache": false,
       "inputs": [
         "{projectRoot}/prisma/schema.prisma",
         {
