@@ -215,7 +215,7 @@ pnpm nx g @nx/next:app --help
 
 ## Contributing
 
-See [CLAUDE.md](./CLAUDE.md) or [AGENTS.md](./AGENTS.md)for development guidelines and project conventions.
+See [CLAUDE.md](./CLAUDE.md) or [AGENTS.md](./AGENTS.md) for development guidelines and project conventions.
 
 ## License
 
