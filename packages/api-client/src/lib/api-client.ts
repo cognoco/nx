@@ -48,7 +48,7 @@ export interface ClientConfig {
  * @example
  * // Web usage (Next.js)
  * const client = createClient({
- *   baseUrl: 'http://localhost:3000',
+ *   baseUrl: 'http://localhost:4000',
  *   headers: {
  *     'Content-Type': 'application/json',
  *   },
@@ -57,7 +57,7 @@ export interface ClientConfig {
  * @example
  * // With dynamic headers (for auth tokens)
  * const client = createClient({
- *   baseUrl: 'http://localhost:3000',
+ *   baseUrl: 'http://localhost:4000',
  *   headers: async () => {
  *     const token = await getAuthToken();
  *     return {
@@ -89,8 +89,8 @@ export function getApiBaseUrl(): string {
     return (
       process.env['NEXT_PUBLIC_API_URL'] ||
       process.env['EXPO_PUBLIC_API_URL'] ||
-      'http://localhost:3000'
+      'http://localhost:4000'
     );
   }
-  return 'http://localhost:3000';
+  return 'http://localhost:4000';
 }
