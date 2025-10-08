@@ -5,6 +5,30 @@
   "references": [
     {
       "path": "./packages/api"
+    },
+    {
+      "path": "./apps/server-e2e"
+    },
+    {
+      "path": "./apps/server"
+    },
+    {
+      "path": "./apps/web-e2e"
+    },
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./packages/database"
+    },
+    {
+      "path": "./packages/schemas"
+    },
+    {
+      "path": "./packages/api-client"
+    },
+    {
+      "path": "./packages/supabase-client"
     }
   ]
 }

@@ -1,0 +1,17 @@
+{
+  "name": "workspace",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run web:dev",
+          "nx run server:serve"
+        ],
+        "parallel": true
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@nx-test/web",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "next": "~15.2.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "@nx-test/supabase-client": "workspace:*",
+    "@nx-test/schemas": "workspace:*"
+  }
+}
