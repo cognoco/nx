@@ -15,25 +15,57 @@ This is an Nx monorepo workspace with the following setup:
 - **Linting**: ESLint 9 with TypeScript ESLint
 - **TypeScript**: Strict mode enabled with composite builds
 
-**Project Status:** The project was recently scaffolded using NX. It currently has no actual applications or functionality!
+**Project Status:** Building a **reusable Nx monorepo template** for full-stack SaaS applications. This POC validates that web app, server, and database communicate correctly via our selected tech stack (Next.js 15, oRPC, Supabase, Prisma). Once validated, the sample application will be removed and replaced with actual product features.
+
+**See**: `docs/poc-plan.md` for detailed POC scope and phases.
 
 ## Applications
 
-### nx-test (`apps/nx-test`)
+### server (`apps/server`)
+Express + oRPC API server:
+- **Source code**: `apps/server/src/` (Express with oRPC router)
+- **Main entry**: `apps/server/src/main.ts`
+- **Router**: `apps/server/src/router.ts` (oRPC CRUD operations)
+- **Unit tests**: `apps/server/*.spec.ts` (Jest)
+- **E2E tests**: `apps/server-e2e/src/*.spec.ts` (deferred)
+
+### web (`apps/web`)
 Next.js 15 application with React 19:
-- **Source code**: `apps/nx-test/src/app/` (Next.js App Router)
-- **Public assets**: `apps/nx-test/public/`
-- **Unit/component tests**: `apps/nx-test/specs/*.spec.tsx` (Jest + Testing Library)
+- **Source code**: `apps/web/src/app/` (Next.js App Router)
+- **Public assets**: `apps/web/public/`
+- **Unit/component tests**: `apps/web/specs/*.spec.tsx` (Jest + Testing Library)
 - **Configuration files**: `next.config.js`, `tailwind.config.js`, `postcss.config.js`, `jest.config.ts`
-- **Coverage output**: `coverage/apps/nx-test/`
+- **E2E tests**: `apps/web-e2e/src/*.spec.ts` (Playwright - deferred until POC validated)
 - **Dev server**: http://localhost:3000
 
-### nx-test-e2e (`apps/nx-test-e2e`)
-Playwright E2E test suite:
-- **Test files**: `apps/nx-test-e2e/src/*.spec.ts`
-- **Configuration**: `playwright.config.ts`
-- Tests run against chromium, firefox, and webkit
-- Automatically starts dev server before running tests
+### mobile (`apps/mobile`)
+Status: **Decision deferred to Phase 3** (see poc-plan.md)
+- Mobile app with Expo Router will be implemented only if approved after web + server validation
+
+## Shared Packages
+
+### database (`packages/database`)
+Prisma ORM configured for Supabase:
+- **Schema**: `packages/database/prisma/schema.prisma`
+- **Client export**: `packages/database/src/lib/database.ts`
+- **Unit tests**: `packages/database/src/lib/*.spec.ts`
+
+### schemas (`packages/schemas`)
+Zod validation schemas shared across server and client:
+- **Todo schemas**: `packages/schemas/src/lib/todo.ts`
+- **Re-exports**: `packages/schemas/src/index.ts`
+- **Unit tests**: `packages/schemas/src/lib/*.spec.ts`
+
+### api-client (`packages/api-client`)
+oRPC client factory for web and mobile:
+- **Client factory**: `packages/api-client/src/lib/api-client.ts`
+- **Unit tests**: `packages/api-client/src/lib/*.spec.ts`
+
+### supabase-client (`packages/supabase-client`)
+Supabase client factory for browser and React Native:
+- **Factory**: `packages/supabase-client/src/lib/supabase-client.ts`
+- **Type stubs**: `packages/supabase-client/src/lib/database.types.ts`
+- **Unit tests**: `packages/supabase-client/src/lib/*.spec.ts`
 
 # Common Commands
 
@@ -97,8 +129,12 @@ npx nx list                         # List installed plugins
 - Declaration maps and emit declaration only are enabled for better IDE support
 
 ## Testing Strategy
-- Unit tests: Jest with jsdom environment via `@testing-library/react`
-- E2E tests: Playwright running against multiple browsers
+- **Unit tests**: Jest with jsdom environment via `@testing-library/react`
+  - **Required for**: All packages/ (database, schemas, api-client, supabase-client)
+  - **Optional for**: Apps (server, web) during POC phase
+- **E2E tests**: Playwright (DEFERRED until POC validated)
+  - Not run in local workflow or CI until architecture validated
+  - Will be enabled after Phase 2 completion per constitution
 - Test target depends on build completion (`dependsOn: ["^build"]`)
 
 ## Coding Conventions

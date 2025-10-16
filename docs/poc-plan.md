@@ -1,73 +1,79 @@
-# PoC Plan: Nx Monorepo with Functional Parity to bts-test
+# Nx Monorepo Architecture Foundation
 
 ## Overview
 
-This plan outlines building a proof-of-concept (PoC) Nx monorepo that achieves **functional parity** with the bts-test Turborepo project, but using **Nx-native patterns and conventions**. The goal is to compare developer experience, build performance, and scalability between the two monorepo solutions.
+This plan outlines building a **reusable Nx monorepo template** that establishes a production-ready foundation for full-stack SaaS applications. The goal is to validate that our selected technologies integrate correctly, establish working scaffolding for linting and testing, and ensure functional CI/CD pipelines.
+
+### Purpose
+
+This POC/template serves dual purposes:
+1. **Validation**: Prove that web app, server, and database communicate correctly via our selected tech stack
+2. **Reusability**: Create a generic foundation that can be cloned for future SaaS projects
 
 ### Key Principle
 
-We are **NOT** recreating bts-test's architecture. We are recreating its **functionality** using the Nx way of doing things.
+Keep the implementation **generic and minimal**. This is infrastructure validation, not product development. Once validated, the sample application will be removed and replaced with actual product features.
 
 ### Technology Stack
 
-**Differences from bts-test**:
-
-- **Database & Auth**: Supabase (instead of Neon + Better-Auth)
-- **Mobile Routing**: Expo Router (instead of React Navigation)
-- **Monorepo**: Nx (instead of Turborepo)
-- **Linting and formatting**: ESLint+Prettier with Nx (instead of Ultracite)
-
-**Same as bts-test**:
-
 - **Web Framework**: Next.js 15 with React 19
-- **Mobile Framework**: React Native with Expo
 - **API Layer**: oRPC with Zod validation
+- **Database & Auth**: Supabase (PostgreSQL + authentication)
 - **ORM**: Prisma (configured for Supabase)
 - **Styling**: Tailwind CSS and ShadCN
-- **Package Manager**: pnpm
+- **Package Manager**: pnpm (v9+)
+- **Monorepo**: Nx with buildable libraries
+- **Linting & Formatting**: ESLint 9 + Prettier
+- **Testing**: Jest (unit), Playwright (E2E when implemented)
+- **Mobile Framework**: React Native with Expo Router (decision deferred - see Phase 3)
 
-## Phase 0: Functional Inventory (1 hour)
+## Phase 0: Requirements Definition
 
-**Goal**: Understand what bts-test _does_, not how it's built.
+**Goal**: Define what the POC must validate.
 
-### Deliverables
+### Core Validation Checklist
 
-#### Functional Checklist
+The POC must demonstrate:
 
-- ✅ Todo CRUD operations
-- ✅ User authentication (Supabase Auth instead of Better-Auth)
-- ✅ Database operations (Prisma with Supabase)
-- ✅ Type-safe API (oRPC)
-- ✅ Web UI (Next.js)
-- ✅ Mobile UI (React Native/Expo with Expo Router)
-- ✅ Shared validation (Zod schemas)
-- ✅ Shared database client (Prisma)
-- ✅ Shared API client (oRPC client factory)
+- ✅ Todo CRUD operations (simple data model)
+- ✅ User authentication via Supabase Auth
+- ✅ Database operations via Prisma connected to Supabase
+- ✅ Type-safe API using oRPC with Zod validation
+- ✅ Web UI (Next.js) consuming the API
+- ✅ Shared validation schemas (Zod) used across server and client
+- ✅ Shared database client (Prisma) accessible from server
+- ✅ Shared API client (oRPC factory) used by web app
+- ✅ Nx module boundaries enforced
+- ✅ Lint and typecheck gates passing
+- ✅ Unit tests for shared packages
+- ✅ CI pipeline (GitHub Actions) running quality gates
 
-#### Testing Checklist
+### Manual Verification Checklist
 
-Manual tests that prove each function works:
+Tests that prove the architecture works:
 
-1. Database connection and migrations work
-2. API endpoints respond correctly
+1. Database connection and migrations work (Prisma + Supabase)
+2. API endpoints respond correctly (oRPC server)
 3. Web UI performs CRUD operations
-4. User can sign up and log in (web)
+4. User can sign up and log in (Supabase Auth)
 5. Protected routes require authentication
-6. Mobile app performs CRUD operations
-7. User can sign up and log in (mobile)
-8. Data syncs between web and mobile
+6. Shared packages (database, schemas, api-client) build independently
+7. Nx affected commands correctly identify changed projects
+8. CI pipeline passes on pull requests
 
-#### Out of Scope
+### Explicitly Out of Scope
 
-- Exact file structure matching bts-test
-- Naming conventions matching bts-test
-- Package organization matching bts-test
+- Product-specific features or business logic
+- Production deployment configuration
+- Performance optimization
+- Comprehensive E2E test coverage (deferred until architecture validated)
+- Mobile app (decision point in Phase 3)
 
 ## Phase 1: Nx-Native Scaffolding (2-3 hours)
 
-**Goal**: Generate Nx-idiomatic structure that _can_ support bts-test functionality.
+**Goal**: Generate Nx-idiomatic structure for full-stack SaaS application.
 
-**Approach**: Use Nx generators exclusively where possible.
+**Approach**: Use Nx generators exclusively to establish the monorepo structure.
 
 ### Step 1.1: Generate Applications
 
@@ -78,18 +84,17 @@ npx nx g @nx/node:app server --directory=apps/server --framework=express
 # Web frontend
 npx nx g @nx/next:app web --directory=apps/web
 
-# Mobile app with Expo Router
-npx nx g @nx/expo:app mobile --directory=apps/mobile
-
 # Remove boilerplate apps
-rm -rf apps/nx-test apps/nx-test-e2e apps/frontend apps/frontend-e2e
+rm -rf apps/nx-test apps/nx-test-e2e
 ```
+
+**Note**: Mobile app generation deferred to Phase 3 (decision point).
 
 **Manual checkpoint**: `npx nx run-many -t build` succeeds for all apps
 
-### Step 1.2: Generate Shared Libraries (The Nx Way)
+### Step 1.2: Generate Shared Libraries
 
-Nx has strong opinions about library types. Follow them:
+Nx buildable libraries enable independent compilation and caching:
 
 ```bash
 # Database library (buildable, publishable to other apps)
@@ -105,10 +110,10 @@ npx nx g @nx/node:lib api-client --directory=packages/api-client --buildable
 npx nx g @nx/js:lib supabase-client --directory=packages/supabase-client --buildable
 ```
 
-**Note**: Nx may encourage MORE granular libraries than Turborepo. Consider adding:
-
-- `packages/ui` - Shared UI components (if needed)
-- Feature-specific libraries as needed
+**Note**: Additional libraries can be added as needed:
+- `packages/ui` - Shared UI components
+- `packages/utils` - Shared utilities
+- Feature-specific libraries for domain logic
 
 **Manual checkpoint**: `npx nx graph` shows clean dependency graph
 
@@ -194,13 +199,6 @@ Minimal setup to prove structure works:
 - `src/app/page.tsx` - Placeholder homepage
 - `src/app/todos/page.tsx` - Placeholder todos page
 - `src/lib/supabase.ts` - Supabase client initialization using `@nx-test/supabase-client` factory
-
-**Mobile App** (`apps/mobile`):
-
-- `app/_layout.tsx` - Expo Router root layout
-- `app/index.tsx` - Placeholder home screen
-- `app/todos.tsx` - Placeholder todos screen
-- `lib/supabase.ts` - Supabase client initialization using `@nx-test/supabase-client` factory with AsyncStorage
 
 **Manual checkpoint**: `pnpm dev` starts all apps (even if they don't do anything yet)
 
@@ -354,73 +352,53 @@ Build functionality incrementally using vertical slices.
 - E2E tests pass
 - UI is responsive and styled with Tailwind
 
-### Slice 5: Mobile App (4-5 hours)
+## Phase 3: Mobile App Decision Point
 
-**Goal**: Prove cross-platform works with Expo Router.
+**Goal**: Decide whether to include mobile app in the POC/template.
 
-#### Tasks
+### Decision Criteria
 
-1. Set up Supabase client for React Native in `apps/mobile/lib/supabase.ts` using `@nx-test/supabase-client` factory with AsyncStorage
-2. Create API client instance in `apps/mobile/lib/api.ts` using `@nx-test/api-client`
-3. Configure Expo Router layout in `apps/mobile/app/_layout.tsx`:
-   - Set up navigation structure
-   - Add authentication context provider
-4. Implement authentication screens:
-   - `apps/mobile/app/login.tsx`
-   - `apps/mobile/app/signup.tsx`
-5. Implement todo screens using Expo Router:
-   - `apps/mobile/app/(tabs)/_layout.tsx` - Tab navigation
-   - `apps/mobile/app/(tabs)/index.tsx` - Todo list screen
-   - `apps/mobile/app/(tabs)/profile.tsx` - User profile (optional)
-6. Add todo UI components:
-   - Todo list with pull-to-refresh
-   - Create todo input
-   - Todo item with checkbox and delete
-7. Test auth flow on Expo Go
-8. Test data sync between web and mobile
+Before implementing mobile:
+1. Web app + server + database integration must be fully validated
+2. All quality gates passing (lint, typecheck, unit tests for packages)
+3. CI pipeline functional
+4. Nx buildable library pattern proven
 
-#### Manual Checkpoints
+### If Mobile App Approved
 
-- [ ] `pnpm --filter mobile dev` starts Expo dev server
-- [ ] Expo Go loads mobile app
-- [ ] Can navigate between screens using Expo Router
-- [ ] Can create account via mobile signup
-- [ ] Can log in via mobile login
-- [ ] Unauthenticated users see login screen
-- [ ] Can create todo via mobile UI
-- [ ] Can mark todo as complete via mobile UI
-- [ ] Can delete todo via mobile UI
-- [ ] Changes made on web appear on mobile after refresh
-- [ ] Changes made on mobile appear on web after refresh
+**Estimated effort**: 4-5 hours
 
-#### Completion Criteria
+Implement Slice 5 using Expo Router:
+- Set up Supabase client for React Native with AsyncStorage
+- Create API client instance using `@nx-test/api-client`
+- Configure Expo Router navigation
+- Implement authentication screens (login, signup)
+- Implement todo screens with tab navigation
+- Test cross-platform package compatibility
+- Validate data syncs between web and mobile
 
+**Success criteria**:
 - Full authentication flow works on mobile
 - Full todo CRUD works on mobile
 - Expo Router navigation works correctly
-- Data syncs between web and mobile platforms
-- UI follows mobile design patterns
+- Shared packages support both platforms
+
+### If Mobile App Deferred
+
+Document the decision and proceed to Phase 4 (documentation and template finalization).
+
+**Note**: The current product roadmap does not require mobile, making this decision optional for the initial POC/template.
 
 ## Success Criteria
 
-### Functional Parity Achieved When:
+### POC Validation Complete When:
 
-1. ✅ Users can sign up and log in (web and mobile) via Supabase Auth
+1. ✅ Users can sign up and log in (web) via Supabase Auth
 2. ✅ Authenticated users can create, read, update, delete todos
 3. ✅ Data is persisted to Supabase database via Prisma
 4. ✅ API is type-safe using oRPC and Zod
 5. ✅ Shared packages work correctly across apps
-6. ✅ All tests pass (unit, integration, E2E)
-7. ✅ Both web and mobile apps are functional
-
-### Nx vs Turborepo Comparison Points:
-
-- **Developer Experience**: Code generation, conventions, error messages
-- **Build Performance**: Caching, affected commands, incremental builds
-- **Dependency Management**: How libraries reference each other
-- **Tooling Integration**: ESLint, Jest, Playwright setup complexity
-- **Scalability**: How easy to add new apps/packages
-- **Documentation**: Quality of official docs and community support
+6. ✅ All tests pass (unit and integration)
 
 ## Estimated Timeline
 
@@ -438,6 +416,6 @@ Build functionality incrementally using vertical slices.
 ## Notes
 
 - **Manual testing is required** at each checkpoint to verify functionality
-- **Deviations from plan are expected** as we discover Nx patterns
-- **Documentation as we go** - Update this plan with learnings
-- **Tech stack choices** are intentional for comparison purposes
+- **Document all Nx commands and patterns** for team wiki/knowledge base
+- **Keep implementation generic** - this is template scaffolding, not product development
+- **Tech stack selections** are based on production requirements and team expertise
